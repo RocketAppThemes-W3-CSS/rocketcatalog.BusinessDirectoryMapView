@@ -1,0 +1,30 @@
+﻿@inherits RocketCatalog.Components.RocketCatalogTokens<Simplisity.SimplisityRazor>
+@using RocketCatalog.Components;
+@using DNNrocketAPI.Components;
+@using Simplisity;
+
+@{
+    var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
+    var remoteModule = (RemoteModule)Model.GetDataObject("remotemodule");
+    var info = new SimplisityInfo(remoteModule.Record);
+}
+@AddProcessData("resourcepath", appTheme.AppThemeVersionFolderRel + "/resx/")
+
+<div class="w3-half w3-padding">
+    <label>Height (px)</label>
+    @TextBox(info, "genxml/settings/height", " class='w3-input w3-border'", "700")
+</div>
+<div class="w3-row">
+    <div class="w3-half w3-padding">
+        <label>@ResourceKey("Theme.showextrainfo")</label><br />
+        @CheckBox(info, "genxml/settings/extrainfo", "", "class='w3-check'", true)
+    </div>
+    <div class="w3-half w3-padding">
+        <label>@ResourceKey("Theme.showwebsite")</label><br />
+        @CheckBox(info, "genxml/settings/websitelink", "", "class='w3-check'", true)
+    </div>
+</div>
+<div class="w3-row w3-padding">
+    <label>@ResourceKey("Theme.detailpageurl")</label>
+    @TextBox(info, "genxml/settings/detailpage", " class='w3-input w3-border'", Model.SessionParamsData.PageUrl)
+</div>

@@ -234,4 +234,16 @@
   <data name="mapmsg.Text" xml:space="preserve">
     <value>FIND THE POSITION ON THE MAP AND DOUBLE CLICK TO UPDATE THE LONGITUDE AND LATITUDE.</value>
   </data>
+  <data name="moreinfo.Text" xml:space="preserve">
+    <value>More Info</value>
+  </data>
+  <data name="detailpageurl.Text" xml:space="preserve">
+    <value>Detail Page URL</value>
+  </data>
+  <data name="showextrainfo.Text" xml:space="preserve">
+    <value>Show Detail Page link</value>
+  </data>
+  <data name="showwebsite.Text" xml:space="preserve">
+    <value>Show Website link</value>
+  </data>
 </root>

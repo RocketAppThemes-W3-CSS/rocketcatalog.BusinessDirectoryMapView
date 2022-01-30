@@ -234,4 +234,13 @@
   <data name="mapmsg.Text" xml:space="preserve">
     <value>PENSEZ A POSITIONNER VOTRE POINT SUR CETTE CARTE POUR APPARAITRE SUR LA CARTE DU SITE (ZOOMER PUIS DOUBLE-CLIQUER POUR PLACER / DEPLACER LA VIGNETTE)</value>
   </data>
+  <data name="moreinfo.Text" xml:space="preserve">
+    <value>En savoir plus</value>
+  </data>
+  <data name="showextrainfo.Text" xml:space="preserve">
+    <value>Show Detail Page link</value>
+  </data>
+  <data name="showwebsite.Text" xml:space="preserve">
+    <value>Show Website link</value>
+  </data>
 </root>
