@@ -1,0 +1,12 @@
+﻿@inherits RocketCatalog.Components.RocketCatalogTokens<Simplisity.SimplisityRazor>
+@using RocketCatalog.Components;
+@using DNNrocketAPI.Components;
+
+@{ 
+    var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
+}
+<!-- !PAGE CONTENT! -->
+<div id="catalog-mapview-tag" class="catalog-mapview-container">
+    @RenderTemplate("ArticleMap.cshtml", appTheme, Model, true)
+</div>
+<div class="w3-overlay simplisity_loader" style="z-index:999;"></div>

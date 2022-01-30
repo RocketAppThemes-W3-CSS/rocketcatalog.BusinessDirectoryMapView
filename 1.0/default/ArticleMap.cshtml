@@ -1,0 +1,126 @@
+﻿@inherits RocketCatalog.Components.RocketCatalogTokens<Simplisity.SimplisityRazor>
+@using DNNrocketAPI;
+@using Simplisity;
+@using RocketPortal.Components;
+@using RocketCatalog.Components;
+@using DNNrocketAPI.Components;
+@using System.Globalization;
+
+@AddProcessData("resourcepath", "/DesktopModules/DNNrocket/api/App_LocalResources/")
+@AddProcessData("resourcepath", "/DesktopModules/DNNrocketModules/RocketCatalog/App_LocalResources/")
+
+@{ 
+    var sessionParams = (SessionParams)Model.SessionParamsData;
+    var articleDataList = (ArticleLimpetList)Model.GetDataObject("articlelist");
+    var portalCatalog = (PortalCatalogLimpet)Model.GetDataObject("portalcatalog");
+    var remoteModule = (RemoteModule)Model.GetDataObject("remotemodule");
+    var portalData = (PortalLimpet)Model.GetDataObject("portaldata");
+    var categoryList = (CategoryLimpetList)Model.GetDataObject("categorylist");
+    var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
+    var appThemeDefault = (AppThemeLimpet)Model.GetDataObject("appthemedefault");
+    var categoryData = new CategoryLimpet(portalCatalog.PortalId, articleDataList.CategoryId, sessionParams.CultureCode);
+}
+
+@AddProcessData("resourcepath", appTheme.AppThemeVersionFolderRel + "/resx/")
+
+@if (portalCatalog.DebugMode)
+{<div class="w3-small">@DateTime.Now.ToString()</div>}
+
+<div id="leafletmap"></div>
+
+@{
+    var locationlist = "";
+    var boundlocationlist = "";
+    var gpslong = "";
+    var gpslat = "";
+    var companyname = "";
+    var websiteurl = "";
+    var txtdata = "";
+    var articlesummary = "";
+    ArticleImage articleImage = null;
+}
+
+@foreach (ArticleLimpet articleData in articleDataList.GetArticleList())
+{
+    var info = articleData.Info;
+    gpslong = info.GetXmlProperty("genxml/textbox/long").Replace("'", "");
+    gpslat = info.GetXmlProperty("genxml/textbox/lat").Replace("'", "");
+    companyname = info.GetXmlProperty("genxml/lang/genxml/textbox/articlename").Replace("'", "-");
+    articlesummary = BreakOf(info, "genxml/lang/genxml/textbox/articlesummary").ToString().Replace("'", "-");
+    if (articlesummary != "")
+    {
+        articlesummary = articlesummary.Substring(0, 200);
+    }
+    websiteurl = info.GetXmlProperty("genxml/textbox/website");
+    articleImage = articleData.GetImage(0);
+    if (GeneralUtils.IsNumeric(gpslong) && (GeneralUtils.IsNumeric(gpslat)))
+    {
+        var mapIcon = "defaultIcon";
+
+        txtdata = "'<div class=\"leafletinfowindow liwimg\" style=\"overflow: hidden;\">";
+        txtdata += "<h3>" + companyname + "</h3>";
+        if (articleImage != null && articleImage.RelPath != "")
+        {
+
+            txtdata += "<div class=\"w3-row\"><div class=\"w3-col m4\" style=\"width:90px;\">";
+            txtdata += "<img src=\"" + ThumbnailImageUrl(portalData.EngineUrlWithProtocol, articleImage.RelPath, 80, 80) + "\"/>";
+            txtdata += "</div><div class=\"w3-col m8\"><p>" + articlesummary + "</p></div></div>";
+        }
+        else
+        {
+            txtdata += "<div><p>" + articlesummary + "</p></div>";
+        }
+        txtdata += "<div><a href=" + websiteurl + " target=\"blank\">En savoir plus</a></div>";
+
+        txtdata += "</div>'";
+
+        locationlist += "var m = L.marker([" + gpslat + ", " + gpslong + "], {icon: " + mapIcon + ",itemid: " + info.ItemID + "}, { title: '" + companyname + "' }, {itemid: " + info.ItemID + "});";
+        locationlist += "m.bindPopup(" + txtdata + ").openPopup();";
+        locationlist += "m.number = " + info.ItemID + ";";
+        locationlist += "markers1.addLayer(m);";
+        boundlocationlist += "L.marker([" + gpslat + ", " + gpslong + "]),";
+    }
+}
+
+
+<script>
+
+    var defaultIcon = L.icon({
+        iconUrl: '@(sessionParams.EngineURL + "/" + appTheme.AppThemeVersionFolderRel)/img/marker-default.png',
+    });
+    var siteIcon = L.icon({
+        iconUrl: '@(sessionParams.EngineURL + "/" + appTheme.AppThemeVersionFolderRel)/img/marker-site.png',
+    });
+
+    //set grouping markers maxClusterRadius: 80 is the default option, can change to reduce splitting on zoom
+    var markers1 = L.markerClusterGroup();
+
+    var map = L.map('leafletmap').setView([51.505, -0.09], 13);
+
+    var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    //set the initial padding of the map depending on markers position
+    var boundmarkers = [@(new RazorEngine.Text.RawString(boundlocationlist.TrimEnd(',')))];
+
+    if (boundmarkers.length > 0)
+    {
+        var group = L.featureGroup(boundmarkers);
+        map.fitBounds(group.getBounds(), {
+        	padding: [100, 100]
+        })
+    }
+
+    @(new RazorEngine.Text.RawString(locationlist))
+
+
+    // add markers layer
+    map.addLayer(markers1);
+    map.on('focus', function() { map.scrollWheelZoom.enable(); });
+    map.on('blur', function () { map.scrollWheelZoom.disable(); });
+
+
+</script>
+
