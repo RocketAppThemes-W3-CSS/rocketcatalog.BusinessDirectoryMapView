@@ -47,7 +47,7 @@
     gpslat = info.GetXmlProperty("genxml/textbox/lat").Replace("'", "");
     companyname = info.GetXmlProperty("genxml/lang/genxml/textbox/articlename").Replace("'", "-");
     articlesummary = BreakOf(info, "genxml/lang/genxml/textbox/articlesummary").ToString().Replace("'", "-");
-    if (articlesummary != "")
+    if (articlesummary.Length > 200)
     {
         articlesummary = articlesummary.Substring(0, 200);
     }
