@@ -2,11 +2,19 @@
 @using RocketCatalog.Components;
 @using DNNrocketAPI.Components;
 
-@{ 
-    var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
-}
-<!-- !PAGE CONTENT! -->
 <div id="catalog-mapview-tag" class="catalog-mapview-container">
-    @RenderTemplate("ArticleMap.cshtml", appTheme, Model, true)
+    @{
+        var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
+        var articleData = (ArticleLimpet)Model.GetDataObject("articledata");
+        if (articleData != null)
+        {
+            var appThemeDefault = new AppThemeLimpet(articleData.PortalId, "rocketcatalog.BusinessDirectory", "1.0", appTheme.Organisation);
+            @RenderTemplate("ArticleDetail.cshtml", appThemeDefault, Model, true)
+        }
+        else
+        {
+            @RenderTemplate("ArticleMap.cshtml", appTheme, Model, true)
+        }
+    }
 </div>
 <div class="w3-overlay simplisity_loader" style="z-index:999;"></div>

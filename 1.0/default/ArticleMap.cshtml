@@ -74,7 +74,7 @@
         }
         if (remoteModule.Record.GetXmlPropertyBool("genxml/settings/extrainfo") && remoteModule.Record.GetXmlProperty("genxml/settings/detailpage") != "")
         {
-            txtdata += "<div><a href=\"" + remoteModule.Record.GetXmlProperty("genxml/settings/detailpage") + "?id=" + articleData.ArticleId + "&" + GeneralUtils.UrlFriendly(articleData.Name) + "\">" + ResourceKey("Theme.moreinfo").ToString() + "</a></div>";
+            txtdata += "<div><a href=\"" + remoteModule.Record.GetXmlProperty("genxml/settings/detailpage") + "?articleid=" + articleData.ArticleId + "&" + GeneralUtils.UrlFriendly(articleData.Name) + "\">" + ResourceKey("Theme.moreinfo").ToString() + "</a></div>";
         }
         if (remoteModule.Record.GetXmlPropertyBool("genxml/settings/websitelink") && websiteurl != "")
         {
