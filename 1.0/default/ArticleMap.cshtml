@@ -22,9 +22,6 @@
 @AddProcessData("resourcepath", "/DesktopModules/DNNrocketModules/RocketCatalog/App_LocalResources/")
 @AddProcessData("resourcepath", appTheme.AppThemeVersionFolderRel + "/resx/")
 
-@if (portalCatalog.DebugMode)
-{<div class="w3-small">@DateTime.Now.ToString()</div>}
-
 <div id="leafletmap"></div>
 
 @{
@@ -93,42 +90,50 @@
 
 <script>
 
-    var defaultIcon = L.icon({
+
+    $(document).ready(function () {
+        setTimeout(() => { initmap(); }, 200);
+    });
+
+    function initmap() {
+
+        var defaultIcon = L.icon({
         iconUrl: '@(sessionParams.EngineURL + "/" + appTheme.AppThemeVersionFolderRel)/img/marker-default.png',
-    });
-    var siteIcon = L.icon({
-        iconUrl: '@(sessionParams.EngineURL + "/" + appTheme.AppThemeVersionFolderRel)/img/marker-site.png',
-    });
+        });
+        var siteIcon = L.icon({
+            iconUrl: '@(sessionParams.EngineURL + "/" + appTheme.AppThemeVersionFolderRel)/img/marker-site.png',
+        });
 
-    //set grouping markers maxClusterRadius: 80 is the default option, can change to reduce splitting on zoom
-    var markers1 = L.markerClusterGroup();
+        //set grouping markers maxClusterRadius: 80 is the default option, can change to reduce splitting on zoom
+        var markers1 = L.markerClusterGroup();
 
-    var map = L.map('leafletmap').setView([51.505, -0.09], 13);
+        var map = L.map('leafletmap').setView(['@(remoteModule.Record.GetXmlProperty("genxml/settings/lat"))', '@(remoteModule.Record.GetXmlProperty("genxml/settings/long"))'], 13);
 
-    var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+        var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
 
-    //set the initial padding of the map depending on markers position
-    var boundmarkers = [@(new RazorEngine.Text.RawString(boundlocationlist.TrimEnd(',')))];
+        //set the initial padding of the map depending on markers position
+        var boundmarkers = [@(new RazorEngine.Text.RawString(boundlocationlist.TrimEnd(',')))];
 
-    if (boundmarkers.length > 0)
-    {
-        var group = L.featureGroup(boundmarkers);
-        map.fitBounds(group.getBounds(), {
-        	padding: [100, 100]
-        })
+        if (boundmarkers.length > 0)
+        {
+            var group = L.featureGroup(boundmarkers);
+            map.fitBounds(group.getBounds(), {
+        	    padding: [100, 100]
+            })
+        }
+
+        @(new RazorEngine.Text.RawString(locationlist))
+
+
+        // add markers layer
+        map.addLayer(markers1);
+        map.on('focus', function() { map.scrollWheelZoom.enable(); });
+        map.on('blur', function () { map.scrollWheelZoom.disable(); });
+
     }
-
-    @(new RazorEngine.Text.RawString(locationlist))
-
-
-    // add markers layer
-    map.addLayer(markers1);
-    map.on('focus', function() { map.scrollWheelZoom.enable(); });
-    map.on('blur', function () { map.scrollWheelZoom.disable(); });
 
 
 </script>
-

@@ -7,15 +7,35 @@
     var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
     var remoteModule = (RemoteModule)Model.GetDataObject("remotemodule");
     var info = new SimplisityInfo(remoteModule.Record);
+    var catalogSettings = (CatalogSettingsLimpet)Model.GetDataObject("catalogsettings");
 }
 @AddProcessData("resourcepath", "/DesktopModules/DNNrocket/api/App_LocalResources/")
 @AddProcessData("resourcepath", "/DesktopModules/DNNrocketModules/RocketCatalog/App_LocalResources/")
 @AddProcessData("resourcepath", appTheme.AppThemeVersionFolderRel + "/resx/")
 
-<div class="w3-half w3-padding">
-    <label>@ResourceKey("DNNrocket.height") (px)</label>
-    @TextBox(info, "genxml/settings/height", " class='w3-input w3-border'", "700")
+<div class='w3-row'>
+    <div class="w3-half w3-padding">
+        <label>@ResourceKey("DNNrocket.height") (px)</label>
+        @TextBox(info, "genxml/settings/height", " class='w3-input w3-border'", "700")
+    </div>
+    <div class="w3-half w3-padding">
+        <label>@ResourceKey("Theme.checkboxfilterand")</label><br />
+        @CheckBox(info, "genxml/checkbox/checkboxfilterand", "", " class='w3-check' ")
+    </div>
 </div>
+
+<div class='w3-row w3-padding'>
+    <label>@ResourceKey("Theme.groupfilters")</label>
+    @{
+        var gDict = new Dictionary<string, string>();
+        foreach (var g in catalogSettings.PropertyGroups.Split(','))
+        {
+            gDict.Add(g.Trim(' '), g.Trim(' '));
+        }
+    }
+    @CheckBoxList(info, "genxml/checkboxlist/group", gDict, " class=' rocket-checkboxlist ' ")
+</div>
+
 <div class='w3-row'>
     <div class='w3-col m6 w3-padding'>
         <label>@ResourceKey("Theme.lat")</label>
@@ -56,7 +76,7 @@
         simplisity_injectlink('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.3/leaflet.css');
         simplisity_injectscript('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.3/leaflet.js');
 		setTimeout(() => {  simplisity_injectscript('https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js'); }, 1000);
-		setTimeout(() => {  initmap(); }, 500);
+		setTimeout(() => {  initmap(); }, 1000);
     });
 
     function markerFunction(id) {

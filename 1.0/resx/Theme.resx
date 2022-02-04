@@ -246,4 +246,13 @@
   <data name="showwebsite.Text" xml:space="preserve">
     <value>Show Website link</value>
   </data>
+  <data name="groupfilters.Text" xml:space="preserve">
+    <value>Group Filters</value>
+  </data>
+  <data name="checkboxfilterand.Text" xml:space="preserve">
+    <value>Articles must be in ALL filters.</value>
+  </data>
+  <data name="groupfilters.Text1" xml:space="preserve">
+    <value>Group Filters</value>
+  </data>
 </root>

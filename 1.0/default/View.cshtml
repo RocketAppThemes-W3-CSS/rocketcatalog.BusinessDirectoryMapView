@@ -3,7 +3,15 @@
 @using DNNrocketAPI.Components;
 
 <div id="catalog-mapview-tag" class="catalog-mapview-container">
+
     @{
+        var portalCatalog = (PortalCatalogLimpet)Model.GetDataObject("portalcatalog");
+
+        if (portalCatalog.DebugMode)
+        {
+            <div class="w3-small">@DateTime.Now.ToString()</div>
+        }
+
         var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
         var articleData = (ArticleLimpet)Model.GetDataObject("articledata");
         if (articleData != null)
@@ -13,6 +21,10 @@
         }
         else
         {
+            <div class="w3-row">
+                @RenderTemplate("SearchBanner.cshtml", appTheme, Model, true)
+            </div>
+
             @RenderTemplate("ArticleMap.cshtml", appTheme, Model, true)
         }
     }

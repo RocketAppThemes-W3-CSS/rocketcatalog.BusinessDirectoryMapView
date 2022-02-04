@@ -1,0 +1,120 @@
+﻿@inherits RocketCatalog.Components.RocketCatalogTokens<Simplisity.SimplisityRazor>
+@using Simplisity;
+@using RocketPortal.Components;
+@using RocketCatalog.Components;
+@using DNNrocketAPI.Components;
+@using System.Xml;
+
+@AddProcessData("resourcepath", "/DesktopModules/DNNrocket/api/App_LocalResources/")
+@AddProcessData("resourcepath", "/DesktopModules/DNNrocketModules/RocketCatalog/App_LocalResources/")
+
+@{
+
+    var sessionParams = (SessionParams)Model.SessionParamsData;
+    var portalCatalog = (PortalCatalogLimpet)Model.GetDataObject("portalcatalog");
+    var articleDataList = (ArticleLimpetList)Model.GetDataObject("articlelist");
+    var remoteModule = (RemoteModule)Model.GetDataObject("remotemodule");
+    var portalData = (PortalLimpet)Model.GetDataObject("portaldata");
+    var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
+    var categoryData = new CategoryLimpet(portalCatalog.PortalId, sessionParams.GetInt("searchcategoryid"), sessionParams.CultureCode);
+    var propertyList = (PropertyLimpetList)Model.GetDataObject("propertylist");
+}
+
+<div class="w3-bar searchdata">
+
+    <div class="w3-bar-item  w3-right" style=''>
+        <div class="w3-bar">
+            @TextBox(new SimplisityInfo(), "genxml/textbox/searchtext", " style='height:40px;width:250px;' class='w3-bar-item w3-input w3-border w3-light-grey simplisity_sessionfield actionentrykey' autocomplete='off' ", sessionParams.Get("searchtext"))
+            <span class="w3-bar-item ">
+                <span class="material-icons dosearch" style="cursor: pointer;" onclick="$('.triggersearch').trigger('click');">
+                    search
+                </span>
+                <span class="material-icons w3-small clearsearch" onclick="$('.triggersearch').trigger('click');" style="vertical-align: top; display: none; cursor: pointer; ">
+                    cancel
+                </span>
+            </span>
+        </div>
+    </div>
+
+<div class="w3-row w3-margin-bottom">
+
+    @{
+        var propertyCheckboxes = new List<PropertyLimpet>();
+        var nodList = remoteModule.Record.XMLDoc.SelectNodes("genxml/checkboxlist/group/chk");
+        if (nodList != null)
+        {
+            foreach (XmlNode nodg in nodList)
+            {
+                var groupref = nodg.Attributes.GetNamedItem("data").InnerText;
+                var v = nodg.Attributes.GetNamedItem("value").InnerText;
+                if (v.ToLower() == "true")
+                {
+                    foreach (var p in propertyList.GetPropertyList(groupref))
+                    {
+                        if (!propertyCheckboxes.Contains(p))
+                        {
+                            propertyCheckboxes.Add(p);
+                            @CheckBox(new SimplisityInfo(), "genxml/checkbox/checkboxfilter" + p.PropertyId, "&nbsp;" + p.Name, " class='w3-check w3-padding  simplisity_sessionfield'  onchange=\"$('.triggersearch').trigger('click');\"  ", sessionParams.Info.GetXmlPropertyBool("r/checkboxfilter" + p.PropertyId))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+</div>
+
+</div>
+
+
+<!-- Element to trigger simplisity call from JS event -->
+<span class="w3-hide triggersearch" onclick="setSessionParams();"></span>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.clearsearch ').unbind("click");
+        $('.clearsearch ').click(function () {
+            $('#searchtext').val('');
+            $('.dosearch').trigger('click');
+            return false; // prevent the button click from happening
+        });
+
+
+        if ($('.actionentrykey').val() !== '') {
+            $('.actionentrykey').focus();
+            $('.clearsearch').show();
+            var tmpStr = $('.actionentrykey').val();
+            $('.actionentrykey').val('');
+            $('.actionentrykey').val(tmpStr);
+            $('#searchtext').addClass('w3-theme-light');
+        }
+        else {
+            $('#searchtext').removeClass('w3-theme-light');
+        }
+
+        $('.actionentrykey').unbind('keypress');
+        $('.actionentrykey').on('keypress', function (e) {
+            if (e.keyCode == 13) {
+                $('.dosearch').trigger('click');
+                return false; // prevent the button click from happening
+            }
+        });
+
+    });
+
+
+    function setSessionParams() {
+        simplisity_setSessionField('searchtext', $('#searchtext').val());
+        @foreach (var p in propertyCheckboxes)
+        {
+            var propref = "checkboxfilter" + p.PropertyId;
+            @: simplisity_setSessionField('@(propref)', ($('#@(propref)').is(":checked") ? "true" : "false"));
+        }
+
+        $('.simplisity_loader').show();
+        window.location.href = '@(sessionParams.PageUrl)';
+    }
+
+</script>
