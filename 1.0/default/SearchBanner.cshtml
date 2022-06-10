@@ -16,7 +16,7 @@
     var remoteModule = (RemoteModule)Model.GetDataObject("remotemodule");
     var portalData = (PortalLimpet)Model.GetDataObject("portaldata");
     var appTheme = (AppThemeLimpet)Model.GetDataObject("apptheme");
-    var categoryData = new CategoryLimpet(portalCatalog.PortalId, sessionParams.GetInt("searchcategoryid"), sessionParams.CultureCode);
+    var categoryData = new CategoryLimpet(portalCatalog.PortalId, sessionParams.GetInt("searchcategoryid"), sessionParams.CultureCode, portalCatalog.SystemKey);
     var propertyList = (PropertyLimpetList)Model.GetDataObject("propertylist");
 }
 
